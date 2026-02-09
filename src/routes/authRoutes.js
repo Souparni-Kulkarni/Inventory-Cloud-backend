@@ -1,17 +1,28 @@
 import express from "express";
 const router = express.Router();
 
-router.post("/login", (req, res) => {
-    const { email, password } = req.body;
+let products = [];
 
-    if (email === "admin@test.com" && password === "123456") {
-        return res.json({
-            token: "fake-jwt-token",
-            user: { name: "Admin", role: "OWNER" },
-        });
-    }
+router.get("/", (req, res) => {
+    res.json(products);
+});
 
-    res.status(401).json({ message: "Invalid credentials" });
+router.post("/", (req, res) => {
+    const product = { id: Date.now(), ...req.body };
+    products.push(product);
+    res.json(product);
+});
+
+router.put("/:id", (req, res) => {
+    products = products.map((p) =>
+        p.id == req.params.id ? {...p, ...req.body } : p
+    );
+    res.json({ message: "Updated" });
+});
+
+router.delete("/:id", (req, res) => {
+    products = products.filter((p) => p.id != req.params.id);
+    res.json({ message: "Deleted" });
 });
 
 export default router;
